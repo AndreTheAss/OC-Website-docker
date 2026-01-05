@@ -23,6 +23,8 @@ services:
       WORDPRESS_DB_USER: wp_user_oc
       WORDPRESS_DB_PASSWORD: change-me
       WORDPRESS_DB_NAME: wordpress_oc
+      WORDPRESS_CONFIG_EXTRA: |
+        define('FS_METHOD', 'direct');
     volumes:
       - wordpress_data_oc:/var/www/html
     depends_on:
@@ -32,25 +34,24 @@ services:
       - wp-internal
 
   ftp:
-    image: fauria/vsftpd
+    image: stilliard/pure-ftpd
     restart: unless-stopped
     environment:
-      FTP_USER: wpftp
-      FTP_PASS: change-me
+      PUBLICHOST: 87.106.81.201
+      FTP_USER_NAME: wpftp
+      FTP_USER_PASS: change-me
+      FTP_USER_HOME: /home/wpftp
       FTP_USER_UID: 33
       FTP_USER_GID: 33
-      FTP_USER_HOME: /var/www/html
-      PASV_ADDRESS: ${PASV_ADDRESS:-87.106.81.201}
-      PASV_MIN_PORT: ${PASV_MIN_PORT:-21210}
-      PASV_MAX_PORT: ${PASV_MAX_PORT:-21220}
-      LOG_STDOUT: "yes"
-      FILE_OPEN_MODE: 0666
-      LOCAL_UMASK: 022
+      ADDED_FLAGS: >
+        --chrooteveryone
+        --passiveportrange 21210:21220
+        --noanonymous
     volumes:
-      - wordpress_data_oc:/var/www/html
+      - wordpress_data_oc:/home/wpftp
     ports:
       - "26:21"
-      - "${PASV_MIN_PORT:-21210}-${PASV_MAX_PORT:-21220}:${PASV_MIN_PORT:-21210}-${PASV_MAX_PORT:-21220}"
+      - "21210-21220:21210-21220"
     networks:
       - npm_default
 
