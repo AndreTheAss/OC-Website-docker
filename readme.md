@@ -1,17 +1,17 @@
 # WordPress-Stack für Portainer
 
-Dieses Repository stellt eine Docker-Compose-Definition bereit, um über Portainer (oder direkt per `docker compose`) eine WordPress-Instanz auf dem bestehenden Netzwerk `npm-default` bereitzustellen. Zusätzlich wird ein FTP-Dienst eingebunden, der direkt auf die WordPress-Dateien zugreift.
+Dieses Repository stellt eine Docker-Compose-Definition bereit, um über Portainer (oder direkt per `docker compose`) eine WordPress-Instanz auf dem bestehenden Netzwerk `npm_default` bereitzustellen. Zusätzlich wird ein FTP-Dienst eingebunden, der direkt auf die WordPress-Dateien zugreift.
 
 ## Inhalt der Compose-Datei
 - **MariaDB**: persistent mit `db_data`-Volume.
 - **WordPress (Apache)**: nutzt das gemeinsame `wordpress_data`-Volume für Dateien.
 - **FTP (fauria/vsftpd)**: greift auf das `wordpress_data`-Volume zu und stellt einen FTP-Login bereit.
-- **Netzwerke**: nutzt das externe Netzwerk `npm-default` (z. B. für Nginx Proxy Manager) und ein internes Netzwerk `wp-internal` für die DB-Kommunikation.
+- **Netzwerke**: nutzt das externe Netzwerk `npm_default` (z. B. für Nginx Proxy Manager) und ein internes Netzwerk `wp-internal` für die DB-Kommunikation.
 
 ## Vorbereitungen
-1. Stelle sicher, dass das externe Docker-Netzwerk `npm-default` bereits existiert (z. B. durch Nginx Proxy Manager). Falls nicht, lege es an:
+1. Stelle sicher, dass das externe Docker-Netzwerk `npm_default` bereits existiert (z. B. durch Nginx Proxy Manager). Falls nicht, lege es an:
    ```bash
-   docker network create npm-default
+   docker network create --driver bridge npm_default
    ```
 2. Passe alle Platzhalter-Credentials in der `docker-compose.yml` an (z. B. `change-me`). Verwende starke und unterschiedliche Passwörter für Datenbank und FTP.
 3. Setze vor dem Deploy idealerweise die Umgebungsvariable `PASV_ADDRESS` auf die öffentliche IP/Domain des Hosts, damit der passive FTP-Modus funktioniert (z. B. in Portainer unter *Environment variables* oder per `.env`).
@@ -20,7 +20,7 @@ Dieses Repository stellt eine Docker-Compose-Definition bereit, um über Portain
 1. Öffne Portainer, wähle **Stacks** und klicke auf **Add stack**.
 2. Gib einen Namen ein (z. B. `wordpress-ftp`) und füge den Inhalt der `docker-compose.yml` in das Web-Editor-Feld ein.
 3. Passe die gewünschten Passwörter/Benutzernamen an und überprüfe die Ports (`21` sowie `21000-21010` für FTP-Passivmodus). Stelle sicher, dass sie in der Firewall freigeschaltet sind.
-4. Deploye den Stack. Nginx Proxy Manager kann den `wordpress`-Service direkt über das gemeinsame `npm-default`-Netzwerk erreichen.
+4. Deploye den Stack. Nginx Proxy Manager kann den `wordpress`-Service direkt über das gemeinsame `npm_default`-Netzwerk erreichen.
 
 ## Deployment per CLI
 ```bash
@@ -33,7 +33,7 @@ docker compose up -d
 
 ## Hinweise
 - Das Volume `wordpress_data` wird von WordPress und dem FTP-Container gemeinsam genutzt, sodass hochgeladene Dateien direkt im CMS erscheinen.
-- Der Datenbankdienst ist nur im internen Netzwerk sichtbar. WordPress ist sowohl im internen Netzwerk (für die DB) als auch im `npm-default`-Netzwerk erreichbar.
+- Der Datenbankdienst ist nur im internen Netzwerk sichtbar. WordPress ist sowohl im internen Netzwerk (für die DB) als auch im `npm_default`-Netzwerk erreichbar.
 - Wenn du andere FTP-Ports verwenden möchtest, passe die Port-Mappings im `ftp`-Service an und öffne die Ports in der Firewall.
 
 ## Berechtigungen und Dateizugriffe (FTP & WordPress)
