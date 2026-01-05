@@ -1,6 +1,6 @@
 # WordPress-Stack für Portainer
 
-Dieses Repository stellt eine Docker-Compose-Definition bereit, um über Portainer (oder direkt per `docker compose`) eine WordPress-Instanz auf dem bestehenden Netzwerk `npm_default` bereitzustellen. Zusätzlich wird ein FTP-Dienst eingebunden, der direkt auf die WordPress-Dateien zugreift.
+Dieses Repository stellt eine Docker-Compose-Definition bereit, um über Portainer (oder direkt per `docker compose`) eine WordPress-Instanz auf dem bestehenden Netzwerk `npm_default` bereitzustellen. Zusätzlich wird ein FTP-Dienst (externer Command-Port `26`) eingebunden, der direkt auf die WordPress-Dateien zugreift.
 
 ## Inhalt der Compose-Datei
 - **MariaDB**: persistent mit `db_data`-Volume.
@@ -19,7 +19,7 @@ Dieses Repository stellt eine Docker-Compose-Definition bereit, um über Portain
 ## Deployment mit Portainer
 1. Öffne Portainer, wähle **Stacks** und klicke auf **Add stack**.
 2. Gib einen Namen ein (z. B. `wordpress-ftp`) und füge den Inhalt der `docker-compose.yml` in das Web-Editor-Feld ein.
-3. Passe die gewünschten Passwörter/Benutzernamen an und überprüfe die Ports (`21` sowie `21000-21010` für FTP-Passivmodus). Stelle sicher, dass sie in der Firewall freigeschaltet sind.
+3. Passe die gewünschten Passwörter/Benutzernamen an und überprüfe die Ports (`26` sowie `21000-21010` für FTP-Passivmodus). Stelle sicher, dass sie in der Firewall freigeschaltet sind.
 4. Deploye den Stack. Nginx Proxy Manager kann den `wordpress`-Service direkt über das gemeinsame `npm_default`-Netzwerk erreichen.
 
 ## Deployment per CLI
