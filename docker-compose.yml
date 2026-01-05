@@ -26,8 +26,7 @@ services:
     volumes:
       - wordpress_data:/var/www/html
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     networks:
       - npm_default
       - wp-internal

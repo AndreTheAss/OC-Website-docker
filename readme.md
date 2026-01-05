@@ -37,7 +37,6 @@ docker compose up -d
 - Das Volume `wordpress_data` wird von WordPress und dem FTP-Container gemeinsam genutzt, sodass hochgeladene Dateien direkt im CMS erscheinen. Das FTP-Home `/home/vsftpd/wordpress` zeigt direkt auf das WordPress-Verzeichnis, sodass du `wp-config.php` per FTP erreichst.
 - Der Datenbankdienst ist nur im internen Netzwerk sichtbar. WordPress ist sowohl im internen Netzwerk (für die DB) als auch im `npm_default`-Netzwerk erreichbar.
 - Wenn du andere FTP-Ports verwenden möchtest, passe die Port-Mappings im `ftp`-Service an (Command-Port `26` oder Passive Ports `PASV_MIN_PORT`–`PASV_MAX_PORT`) und öffne die Ports in der Firewall. Wähle einen Bereich, der nicht von anderen FTP-Stacks genutzt wird (Standard: `21210-21220`).
-- Die Datenbank hat einen Healthcheck; WordPress startet erst, wenn der DB-Container als healthy markiert ist. Sollte der Start dennoch hängen, prüfe die DB-Logs in Portainer.
 
 ## Berechtigungen und Dateizugriffe (FTP & WordPress)
 - Der FTP-Benutzer wird in der `docker-compose.yml` auf UID/GID `33` gesetzt (`www-data`), damit WordPress (läuft als `www-data`) und FTP dieselben Dateibesitzer verwenden. Falls du andere Nutzer verwenden möchtest, passe `FTP_USER_UID` und `FTP_USER_GID` an.
