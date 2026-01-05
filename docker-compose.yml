@@ -1,0 +1,66 @@
+version: "3.8"
+
+services:
+  olympiccamp-db:
+    image: mariadb:latest
+    command: ["mariadbd", "--port=3307"]
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: change-me
+      MYSQL_DATABASE: wordpress_oc
+      MYSQL_USER: wp_user_oc
+      MYSQL_PASSWORD: change-me
+    volumes:
+      - db_data_oc:/var/lib/mysql
+    networks:
+      - wp-internal
+
+  wordpress:
+    image: wordpress:latest
+    restart: unless-stopped
+    environment:
+      WORDPRESS_DB_HOST: olympiccamp-db:3307
+      WORDPRESS_DB_USER: wp_user_oc
+      WORDPRESS_DB_PASSWORD: change-me
+      WORDPRESS_DB_NAME: wordpress_oc
+    volumes:
+      - wordpress_data_oc:/var/www/html
+    depends_on:
+      - olympiccamp-db
+    networks:
+      - npm_default
+      - wp-internal
+
+  ftp:
+    image: fauria/vsftpd
+    restart: unless-stopped
+    environment:
+      FTP_USER: wpftp
+      FTP_PASS: change-me
+      FTP_USER_UID: 33
+      FTP_USER_GID: 33
+      FTP_USER_HOME: /home/vsftpd/wordpress
+      PASV_ADDRESS: ${PASV_ADDRESS:-87.106.81.201}
+      PASV_MIN_PORT: ${PASV_MIN_PORT:-21210}
+      PASV_MAX_PORT: ${PASV_MAX_PORT:-21220}
+      LOG_STDOUT: "yes"
+      FILE_OPEN_MODE: 0666
+      LOCAL_UMASK: 022
+    volumes:
+      - wordpress_data_oc:/home/vsftpd/wordpress
+    ports:
+      - "26:21"
+      - "${PASV_MIN_PORT:-21210}-${PASV_MAX_PORT:-21220}:${PASV_MIN_PORT:-21210}-${PASV_MAX_PORT:-21220}"
+    networks:
+      - npm_default
+
+volumes:
+  db_data_oc:
+  wordpress_data_oc:
+
+networks:
+  npm_default:
+    external: true
+    name: npm_default
+  wp-internal:
+    driver: bridge
