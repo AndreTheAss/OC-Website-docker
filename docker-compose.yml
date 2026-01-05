@@ -2,8 +2,8 @@ version: "3.8"
 
 services:
   db:
-    image: mariadb:11.3
-    command: ["mysqld", "--port=3307"]
+    image: mariadb:latest
+    command: ["mariadbd", "--port=3307"]
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: change-me
@@ -39,7 +39,7 @@ services:
       FTP_PASS: change-me
       FTP_USER_UID: 33
       FTP_USER_GID: 33
-      PASV_ADDRESS: ${PASV_ADDRESS:-0.0.0.0}
+      PASV_ADDRESS: ${PASV_ADDRESS:-87.106.81.201}
       PASV_MIN_PORT: ${PASV_MIN_PORT:-21210}
       PASV_MAX_PORT: ${PASV_MAX_PORT:-21220}
       LOG_STDOUT: "yes"

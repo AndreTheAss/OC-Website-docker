@@ -13,8 +13,8 @@ Dieses Repository stellt eine Docker-Compose-Definition bereit, um über Portain
    ```bash
    docker network create --driver bridge npm_default
    ```
-2. Passe alle Platzhalter-Credentials in der `docker-compose.yml` an (z. B. `change-me`). Verwende starke und unterschiedliche Passwörter für Datenbank und FTP. Die Datenbank nutzt einen eindeutigen Namen/Benutzer (`wordpress_oc` / `wp_user_oc`) und lauscht intern auf Port `3307`, damit keine bestehenden DBs mit Standardport `3306` oder Standardnamen berührt werden.
-3. Setze vor dem Deploy idealerweise die Umgebungsvariable `PASV_ADDRESS` auf die öffentliche IP/Domain des Hosts, damit der passive FTP-Modus funktioniert (z. B. in Portainer unter *Environment variables* oder per `.env`).
+2. Passe alle Platzhalter-Credentials in der `docker-compose.yml` an (z. B. `change-me`). Verwende starke und unterschiedliche Passwörter für Datenbank und FTP. Die Datenbank nutzt einen eindeutigen Namen/Benutzer (`wordpress_oc` / `wp_user_oc`) und lauscht intern auf Port `3307` (mit `mariadbd --port=3307`), damit keine bestehenden DBs mit Standardport `3306` oder Standardnamen berührt werden. Standard-Image ist `mariadb:latest`; falls du eine feste Version brauchst, pinne den Tag (z. B. `mariadb:11.3`).
+3. Setze vor dem Deploy idealerweise die Umgebungsvariable `PASV_ADDRESS` auf die öffentliche IP/Domain des Hosts (Standard hier: `87.106.81.201`), damit der passive FTP-Modus funktioniert (z. B. in Portainer unter *Environment variables* oder per `.env`). Wenn du über Nginx Proxy Manager auf `olympic-camp.de` routest, kannst du auch die Domain in `PASV_ADDRESS` setzen.
 4. Standard-Passivports sind jetzt `21210-21220` (gegen Konflikte mit anderen FTP-Stacks). Wenn diese bereits belegt sind, passe sie per Umgebungsvariablen `PASV_MIN_PORT`/`PASV_MAX_PORT` an und öffne die Ports in Firewall/Portainer.
 
 ## Deployment mit Portainer
