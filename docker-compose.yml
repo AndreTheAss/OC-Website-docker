@@ -43,15 +43,21 @@ services:
       FTP_USER_HOME: /home/wpftp
       FTP_USER_UID: 33
       FTP_USER_GID: 33
-      ADDED_FLAGS: >
-        --chrooteveryone
-        --passiveportrange 21210:21220
-        --noanonymous
     volumes:
       - wordpress_data_oc:/home/wpftp
     ports:
       - "26:21"
       - "21210-21220:21210-21220"
+    command: >
+      pure-ftpd
+      -l puredb:/etc/pure-ftpd/pureftpd.pdb
+      -E
+      -j
+      -R
+      -P 87.106.81.201
+      --chrooteveryone
+      --noanonymous
+      --passiveportrange 21210:21220
     networks:
       - npm_default
 
