@@ -10,10 +10,6 @@ services:
       MYSQL_DATABASE: wordpress_oc
       MYSQL_USER: wp_user_oc
       MYSQL_PASSWORD: change-me
-    healthcheck:
-      interval: 10s
-      timeout: 5s
-      retries: 6
     volumes:
       - db_data:/var/lib/mysql
     networks:
