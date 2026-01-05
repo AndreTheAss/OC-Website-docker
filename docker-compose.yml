@@ -39,8 +39,8 @@ services:
       FTP_USER_UID: 33
       FTP_USER_GID: 33
       PASV_ADDRESS: ${PASV_ADDRESS:-0.0.0.0}
-      PASV_MIN_PORT: ${PASV_MIN_PORT:-21100}
-      PASV_MAX_PORT: ${PASV_MAX_PORT:-21110}
+      PASV_MIN_PORT: ${PASV_MIN_PORT:-21210}
+      PASV_MAX_PORT: ${PASV_MAX_PORT:-21220}
       LOG_STDOUT: "yes"
       FILE_OPEN_MODE: 0666
       LOCAL_UMASK: 022
@@ -48,7 +48,7 @@ services:
       - wordpress_data:/home/vsftpd
     ports:
       - "26:21"
-      - "${PASV_MIN_PORT:-21100}-${PASV_MAX_PORT:-21110}:${PASV_MIN_PORT:-21100}-${PASV_MAX_PORT:-21110}"
+      - "${PASV_MIN_PORT:-21210}-${PASV_MAX_PORT:-21220}:${PASV_MIN_PORT:-21210}-${PASV_MAX_PORT:-21220}"
     networks:
       - npm_default
 
