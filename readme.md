@@ -5,7 +5,7 @@ Dieses Repository stellt eine Docker-Compose-Definition bereit, um über Portain
 ## Inhalt der Compose-Datei
 - **MariaDB**: persistent mit `db_data`-Volume.
 - **WordPress (Apache)**: nutzt das gemeinsame `wordpress_data`-Volume für Dateien.
-- **FTP (fauria/vsftpd)**: greift auf das `wordpress_data`-Volume zu und stellt einen FTP-Login bereit.
+- **FTP (fauria/vsftpd)**: greift auf das `wordpress_data`-Volume zu und stellt einen FTP-Login bereit. Das FTP-Home ist `/home/vsftpd/wordpress`, damit du die WordPress-Dateien (inkl. `wp-config.php`) direkt siehst.
 - **Netzwerke**: nutzt das externe Netzwerk `npm_default` (z. B. für Nginx Proxy Manager) und ein internes Netzwerk `wp-internal` für die DB-Kommunikation.
 
 ## Vorbereitungen
@@ -13,7 +13,7 @@ Dieses Repository stellt eine Docker-Compose-Definition bereit, um über Portain
    ```bash
    docker network create --driver bridge npm_default
    ```
-2. Passe alle Platzhalter-Credentials in der `docker-compose.yml` an (z. B. `change-me`). Verwende starke und unterschiedliche Passwörter für Datenbank und FTP. Die Datenbank nutzt einen eindeutigen Namen/Benutzer (`wordpress_oc` / `wp_user_oc`) und lauscht intern auf Port `3307` (mit `mariadbd --port=3307`), damit keine bestehenden DBs mit Standardport `3306` oder Standardnamen berührt werden. Standard-Image ist `mariadb:latest`; falls du eine feste Version brauchst, pinne den Tag (z. B. `mariadb:11.3`).
+2. Passe alle Platzhalter-Credentials in der `docker-compose.yml` an (z. B. `change-me`). Verwende starke und unterschiedliche Passwörter für Datenbank und FTP. Die Datenbank nutzt einen eindeutigen Namen/Benutzer (`wordpress_oc` / `wp_user_oc`) und lauscht intern auf Port `3307` (mit `mariadbd --port=3307`), damit keine bestehenden DBs mit Standardport `3306` oder Standardnamen berührt werden. Standard-Image ist `mariadb:latest`; falls du eine feste Version brauchst, pinne den Tag (z. B. `mariadb:11.3`). WordPress nutzt `wordpress:latest`; auch hier kannst du bei Bedarf auf eine feste Version pinnen (z. B. `wordpress:6.6.1-php8.3-apache`).
 3. Setze vor dem Deploy idealerweise die Umgebungsvariable `PASV_ADDRESS` auf die öffentliche IP/Domain des Hosts (Standard hier: `87.106.81.201`), damit der passive FTP-Modus funktioniert (z. B. in Portainer unter *Environment variables* oder per `.env`). Wenn du über Nginx Proxy Manager auf `olympic-camp.de` routest, kannst du auch die Domain in `PASV_ADDRESS` setzen.
 4. Standard-Passivports sind jetzt `21210-21220` (gegen Konflikte mit anderen FTP-Stacks). Wenn diese bereits belegt sind, passe sie per Umgebungsvariablen `PASV_MIN_PORT`/`PASV_MAX_PORT` an und öffne die Ports in Firewall/Portainer.
 
@@ -34,9 +34,10 @@ docker compose up -d
 ```
 
 ## Hinweise
-- Das Volume `wordpress_data` wird von WordPress und dem FTP-Container gemeinsam genutzt, sodass hochgeladene Dateien direkt im CMS erscheinen.
+- Das Volume `wordpress_data` wird von WordPress und dem FTP-Container gemeinsam genutzt, sodass hochgeladene Dateien direkt im CMS erscheinen. Das FTP-Home `/home/vsftpd/wordpress` zeigt direkt auf das WordPress-Verzeichnis, sodass du `wp-config.php` per FTP erreichst.
 - Der Datenbankdienst ist nur im internen Netzwerk sichtbar. WordPress ist sowohl im internen Netzwerk (für die DB) als auch im `npm_default`-Netzwerk erreichbar.
 - Wenn du andere FTP-Ports verwenden möchtest, passe die Port-Mappings im `ftp`-Service an (Command-Port `26` oder Passive Ports `PASV_MIN_PORT`–`PASV_MAX_PORT`) und öffne die Ports in der Firewall. Wähle einen Bereich, der nicht von anderen FTP-Stacks genutzt wird (Standard: `21210-21220`).
+- Die Datenbank hat einen Healthcheck; WordPress startet erst, wenn der DB-Container als healthy markiert ist. Sollte der Start dennoch hängen, prüfe die DB-Logs in Portainer.
 
 ## Berechtigungen und Dateizugriffe (FTP & WordPress)
 - Der FTP-Benutzer wird in der `docker-compose.yml` auf UID/GID `33` gesetzt (`www-data`), damit WordPress (läuft als `www-data`) und FTP dieselben Dateibesitzer verwenden. Falls du andere Nutzer verwenden möchtest, passe `FTP_USER_UID` und `FTP_USER_GID` an.
