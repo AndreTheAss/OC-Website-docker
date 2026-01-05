@@ -3,11 +3,12 @@ version: "3.8"
 services:
   db:
     image: mariadb:11.3
+    command: ["mysqld", "--port=3307"]
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: change-me
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wp_user
+      MYSQL_DATABASE: wordpress_oc
+      MYSQL_USER: wp_user_oc
       MYSQL_PASSWORD: change-me
     volumes:
       - db_data:/var/lib/mysql
@@ -18,10 +19,10 @@ services:
     image: wordpress:6.6.1-php8.3-apache
     restart: unless-stopped
     environment:
-      WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_USER: wp_user
+      WORDPRESS_DB_HOST: db:3307
+      WORDPRESS_DB_USER: wp_user_oc
       WORDPRESS_DB_PASSWORD: change-me
-      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_NAME: wordpress_oc
     volumes:
       - wordpress_data:/var/www/html
     depends_on:
