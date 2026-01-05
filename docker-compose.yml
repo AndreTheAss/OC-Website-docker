@@ -1,0 +1,64 @@
+version: "3.8"
+
+services:
+  db:
+    image: mariadb:11.3
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: change-me
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wp_user
+      MYSQL_PASSWORD: change-me
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - wp-internal
+
+  wordpress:
+    image: wordpress:6.6.1-php8.3-apache
+    restart: unless-stopped
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wp_user
+      WORDPRESS_DB_PASSWORD: change-me
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wordpress_data:/var/www/html
+    depends_on:
+      - db
+    networks:
+      - npm_default
+      - wp-internal
+
+  ftp:
+    image: fauria/vsftpd
+    restart: unless-stopped
+    environment:
+      FTP_USER: wpftp
+      FTP_PASS: change-me
+      FTP_USER_UID: 33
+      FTP_USER_GID: 33
+      PASV_ADDRESS: ${PASV_ADDRESS:-0.0.0.0}
+      PASV_MIN_PORT: 21000
+      PASV_MAX_PORT: 21010
+      LOG_STDOUT: "yes"
+      FILE_OPEN_MODE: 0666
+      LOCAL_UMASK: 022
+    volumes:
+      - wordpress_data:/home/vsftpd
+    ports:
+      - "26:21"
+      - "21000-21010:21000-21010"
+    networks:
+      - npm_default
+
+volumes:
+  db_data:
+  wordpress_data:
+
+networks:
+  npm_default:
+    external: true
+    name: npm_default
+  wp-internal:
+    driver: bridge
