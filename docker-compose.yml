@@ -40,11 +40,11 @@ services:
       PUBLICHOST: 87.106.81.201
       FTP_USER_NAME: wpftp
       FTP_USER_PASS: change-me
-      FTP_USER_HOME: /home/wpftp
+      FTP_USER_HOME: /var/www/html
       FTP_USER_UID: 33
       FTP_USER_GID: 33
     volumes:
-      - wordpress_data_oc:/home/wpftp
+      - wordpress_data_oc:/var/www/html
     ports:
       - "26:21"
       - "21210-21220:21210-21220"
