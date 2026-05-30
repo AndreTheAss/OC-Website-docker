@@ -19,8 +19,6 @@ services:
     image: wordpress:latest
     restart: unless-stopped
     environment:
-      PHP_UPLOAD_MAX_FILESIZE: 25M
-      PHP_POST_MAX_SIZE: 25M
       WORDPRESS_DB_HOST: olympiccamp-db:3307
       WORDPRESS_DB_USER: wp_user_oc
       WORDPRESS_DB_PASSWORD: change-me
@@ -29,6 +27,7 @@ services:
         define('FS_METHOD', 'direct');
     volumes:
       - wordpress_data_oc:/var/www/html
+      - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     depends_on:
       - olympiccamp-db
     networks:
