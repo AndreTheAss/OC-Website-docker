@@ -27,7 +27,7 @@ services:
         define('FS_METHOD', 'direct');
     volumes:
       - wordpress_data_oc:/var/www/html
-      - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+      - ./uploads.ini:/usr/local/etc/php/conf.d/99-uploads.ini
     depends_on:
       - olympiccamp-db
     networks:
